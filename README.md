@@ -62,10 +62,7 @@ supply-chain-analytics/
 │   └── confusion_matrix.png
 │
 ├── notebooks/
-│   └── phase1_ingestion.ipynb       # Data ingestion & feature engineering
-│   └── phase2_sql_analysis.ipynb    # BigQuery SQL queries
-│   └── phase3_ml_models.ipynb       # XGBoost + Random Forest models
-│
+│   └── phase1_ingestion.ipynb 
 ├── .gitignore
 └── README.md
 ```
