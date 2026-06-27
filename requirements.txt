@@ -1,0 +1,10 @@
+pandas
+numpy
+pandas-gbq
+google-cloud-bigquery
+db-dtypes
+scikit-learn
+xgboost
+matplotlib
+seaborn
+jupyter
