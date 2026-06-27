@@ -11,6 +11,33 @@ An end-to-end supply chain analytics pipeline built on 110,000+ real e-commerce 
 
 ---
 
+## Dashboard Preview
+
+### Overview
+![Dashboard Overview]
+(<img width="2560" height="1664" alt="image" src="https://github.com/user-attachments/assets/39f47249-cb59-4f77-9f1e-81f41c6d3e85" />
+)
+
+### Brazil State Map — Late Delivery Rate
+![Brazil Map]
+(<img width="1432" height="1228" alt="image" src="https://github.com/user-attachments/assets/3a01c886-b2bc-43a3-a7a5-3e5d5990c261" />
+)
+
+### Monthly Order Volume vs Late Delivery Rate
+![Monthly Trend]
+(<img width="1220" height="1266" alt="image" src="https://github.com/user-attachments/assets/f2b321f3-a3b2-4a64-874d-c6ecfc6ea7b5" />
+)
+
+### Route Risk Analysis
+![Route Risk]
+(<img width="1508" height="1208" alt="image" src="https://github.com/user-attachments/assets/cde5052b-4758-40bc-a1a9-8fd2f582b0dd" />
+)
+
+### SLA Breakdown
+![SLA Breakdown]
+(<img width="402" height="406" alt="image" src="https://github.com/user-attachments/assets/8a341735-5e79-46bc-93ed-635142f35232" />
+)
+
 ## Problem Statement
 
 Supply chain inefficiencies cost e-commerce businesses millions in lost revenue and customer trust. This project answers four key business questions:
