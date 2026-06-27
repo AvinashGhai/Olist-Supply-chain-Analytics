@@ -63,6 +63,7 @@ supply-chain-analytics/
 │
 ├── notebooks/
 │   └── phase1_ingestion.ipynb 
+│
 ├── .gitignore
 └── README.md
 ```
@@ -149,10 +150,6 @@ pip install pandas numpy pandas-gbq google-cloud-bigquery scikit-learn xgboost m
    - Enable BigQuery API
    - Download service account JSON key → save as `bq_key.json` in project root
 
-5. Run notebooks in order:
-   - `phase1_ingestion.ipynb`
-   - `phase2_sql_analysis.ipynb`
-   - `phase3_ml_models.ipynb`
 
 ---
 
