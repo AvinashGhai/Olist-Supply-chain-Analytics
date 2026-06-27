@@ -1,44 +1,49 @@
-# 🚚 Olist Supply Chain Analytics
+# Olist Supply Chain Risk Intelligence
 
-An end-to-end supply chain analytics pipeline built on 110,000+ real e-commerce orders from Olist, Brazil's largest online marketplace. The project identifies delivery delays, flags stockout risk, and delivers actionable insights through a live Tableau dashboard.
-
----
-
-## 📊 Live Dashboard
-
-🔗 [View on Tableau Public](https://public.tableau.com/app/profile/avinash.ghai/viz/OlistSupplyChainAnalytics/Dashboard1)
+An end-to-end supply chain analytics pipeline built on 110,000+ real e-commerce orders from Olist, Brazil's largest online marketplace. The project identifies delivery delays, flags high-risk routes and sellers, scores demand concentration risk, and delivers actionable intelligence through a live Tableau dashboard.
 
 ---
 
-## 🔍 Problem Statement
+## Live Dashboard
 
-Supply chain inefficiencies cost e-commerce businesses millions in lost revenue and customer trust. This project answers three key business questions:
-
-1. **Where are deliveries failing?** — Which states and product categories have the highest late delivery rates?
-2. **Can we predict delays before they happen?** — Build a model to forecast delivery delay in days.
-3. **Which products are at stockout risk?** — Identify products with high demand but low seller coverage.
+[View on Tableau Public]
+(https://public.tableau.com/app/profile/avinash.ghai/viz/SupplychainRiskintelligence/Dashboard1)
 
 ---
 
-## 📈 Key Results
+## Problem Statement
+
+Supply chain inefficiencies cost e-commerce businesses millions in lost revenue and customer trust. This project answers four key business questions:
+
+- Where are deliveries failing, and which routes carry the highest risk?
+- Can we predict delivery delays before an order is dispatched?
+- Which sellers are unreliable, and how do we score them objectively?
+- Which product categories face the highest demand concentration risk?
+
+---
+
+## Key Results
 
 | Metric | Value |
-|--------|-------|
+|---|---|
 | Total orders analyzed | 110,189 |
-| Revenue at risk (late orders) | R$ 1,368,508 |
+| Revenue at risk from late orders | R$ 1,368,509 |
 | Delay prediction RMSE | 6.42 days |
-| Delay prediction R² | 0.60 |
-| Late delivery classifier ROC-AUC | 0.97 |
-| Critical stockout-risk products | 2 |
-| High stockout-risk products | 10 |
+| Delay prediction R-squared | 0.60 |
+| Late delivery classifier ROC-AUC | 0.75 |
+| High and critical risk routes identified | 3 |
+| High-risk sellers flagged | 1 |
+| Critical demand concentration categories | 2 |
+
+Note: The classifier ROC-AUC of 0.75 reflects a leak-free model using only pre-delivery features. An earlier version using post-delivery features achieved 0.97 but was discarded due to data leakage.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Tools |
-|-------|-------|
-| Data ingestion & cleaning | Python, Pandas |
+|---|---|
+| Data ingestion and cleaning | Python, Pandas |
 | Cloud data warehouse | Google BigQuery |
 | SQL analysis | BigQuery SQL |
 | Machine learning | XGBoost, Scikit-learn |
@@ -47,122 +52,198 @@ Supply chain inefficiencies cost e-commerce businesses millions in lost revenue 
 
 ---
 
-## 🗂️ Project Structure
+## Project Structure
 
 ```
 supply-chain-analytics/
 │
 ├── data/
-│   ├── delay_by_customer_state.csv
-│   ├── delay_by_seller_state.csv
-│   ├── monthly_trend.csv
-│   ├── stockout_scored.csv
-│   ├── delay_by_category.csv
-│   ├── feature_importance_delay.png
-│   └── confusion_matrix.png
+│   ├── charts/                          # 9 analysis charts (PNG)
+│   ├── tableau/                         # 8 Tableau-ready CSVs
+│   ├── model_predictions.csv
+│   ├── seller_scorecard.csv
+│   ├── route_risk.csv
+│   ├── demand_concentration.csv
+│   ├── priority_orders.csv
+│   └── feature_importance_leakfree.png
 │
 ├── notebooks/
-│   └── phase1_ingestion.ipynb 
+│   ├── 01_data_ingestion.ipynb
+│   ├── 02_sql_analysis.ipynb
+│   ├── 03_ml_models.ipynb
+│   ├── 04_risk_intelligence.ipynb
+│   └── 05_dashboard_prep.ipynb
 │
 ├── .gitignore
+├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## ⚙️ Pipeline
+## Pipeline
 
-### Phase 1 — Data Ingestion & Feature Engineering
-- Downloaded Olist Brazilian E-Commerce dataset (9 CSVs, 100k+ orders)
-- Merged all tables using Pandas across orders, products, sellers, customers, payments, and reviews
-- Engineered key features:
-  - `delivery_delay_days` — actual vs estimated delivery delta
-  - `is_late` — binary flag for late orders
-  - `stockout_risk_score` — order velocity / seller count ratio
-  - `revenue_at_risk` — payment value of late orders
-- Uploaded clean master table to **Google BigQuery** via `pandas-gbq`
+### Notebook 01 — Data Ingestion and Feature Engineering
 
-### Phase 2 — SQL Analysis in BigQuery
-- Wrote analytical SQL queries directly in BigQuery:
+- Downloaded the Olist Brazilian E-Commerce dataset consisting of 9 interlinked CSV files covering orders, products, sellers, customers, payments, and reviews
+- Merged all 9 tables into a single master DataFrame using Pandas
+- Engineered key supply chain features:
+  - delivery_delay_days: difference between actual and estimated delivery date
+  - is_late: binary flag for orders delivered after the estimated date
+  - revenue_at_risk: payment value of late orders
+  - demand_concentration_score: order velocity relative to seller count per product
+- Uploaded the clean master table to Google BigQuery via pandas-gbq
+
+### Notebook 02 — SQL Analysis in BigQuery
+
+- Wrote analytical SQL queries directly in BigQuery covering:
   - Delivery delay by customer state and seller state
-  - Monthly late delivery trend over 3 years
-  - Top 20 at-risk products by stockout score
-  - Delay rate by product category
-  - Revenue at risk aggregations
-- Exported results as CSVs for Tableau and saved analysis tables back to BigQuery
+  - Monthly late delivery trend across 3 years
+  - Revenue at risk aggregations by state and category
+  - Demand concentration risk by product category
+  - Year-over-year performance comparison
+- Exported all results as CSVs and saved analysis tables back to BigQuery
 
-### Phase 3 — Machine Learning Models
+### Notebook 03 — Machine Learning Models
 
-**Model 1 — Delivery Delay Prediction (XGBoost Regression)**
-- Predicted exact delivery delay in days
-- Features: shipping duration, product weight/dimensions, seller state, customer state, payment type, category
-- Results: RMSE 6.42 days | MAE 4.63 days | R² 0.60
+Two models were trained using only pre-delivery features to avoid data leakage. Features such as shipping_duration_days, which are only known after delivery, were explicitly excluded.
 
-**Model 2 — Late Delivery Classifier (Random Forest)**
-- Binary classification: on-time vs late
-- Used `class_weight="balanced"` to handle class imbalance
-- Results: ROC-AUC 0.97 | Strong precision and recall on late class
+**Delivery Delay Prediction (XGBoost Regression)**
+- Target: delivery_delay_days
+- Key features: seller historical late rate, route historical late rate, product dimensions, payment value, order timing
+- Results: RMSE 6.42 days, MAE 4.63 days, R-squared 0.60
 
-**Stockout Risk Scoring**
-- Rule-based scoring: order velocity / seller count
-- Tiered labels: Critical / High / Medium / Low
-- 2 Critical and 10 High risk product categories identified
+**Late Delivery Classifier (XGBoost Classifier)**
+- Target: is_late (binary)
+- Handled class imbalance via scale_pos_weight
+- Results: ROC-AUC 0.75
 
-### Phase 4 — Tableau Dashboard
-- Connected BigQuery analysis tables to Tableau Public
-- Built 4 views:
-  - **Brazil heatmap** — late delivery rate by customer state
-  - **Stockout risk bar chart** — top 20 products colored by risk tier
-  - **Monthly trend** — order volume vs late % over time (dual axis)
-  - **KPI tiles** — total orders, avg delay, late %, revenue at risk
-- Published live dashboard to Tableau Public
+The most important predictors were seller_late_rate and route_late_rate, confirming that historical seller and route behavior is the strongest signal for predicting future delays.
+
+### Notebook 04 — Risk Intelligence
+
+**Seller Reliability Scoring**
+
+Each seller with 10 or more orders was scored using a composite formula:
+
+```
+reliability_score = 100 - late_rate_penalty - delay_penalty - cancellation_penalty
+```
+
+Sellers were classified into three tiers: Reliable, Watchlist, and High Risk.
+
+**SLA Breach Categorization**
+
+Orders were classified into five severity tiers:
+- Early (3+ days ahead of schedule)
+- On Time
+- 1-3 Days Late
+- 4-7 Days Late
+- 8+ Days Late
+
+**Route Risk Analysis**
+
+Seller state to customer state pairs were analyzed for late delivery rate, average delay, and revenue at risk. Routes were classified as Critical, High, Medium, or Low risk based on their late delivery percentage.
+
+**Revenue at Risk Priority Scoring**
+
+Each order was assigned a priority score:
+
+```
+priority_score = late_probability x payment_value
+```
+
+Orders were assigned one of three intervention actions: Priority carrier escalation, Proactive customer update, or Standard monitoring.
+
+**Demand Concentration Risk**
+
+Product categories were scored based on order volume relative to seller count. High demand with low seller coverage indicates concentration risk. Categories were labeled Critical, High, Medium, or Low.
+
+### Notebook 05 — Dashboard Preparation
+
+- Pulled all final tables from BigQuery
+- Exported 8 clean Tableau-ready CSVs with pre-calculated fields and correct data types
+- Prepared primary flat file with SLA categories pre-computed for drag-and-drop use in Tableau
 
 ---
 
-## 📊 Dashboard Preview
+## Dashboard Views
 
-| View | Insight |
-|------|---------|
-| Brazil Heatmap | Northern states show highest late delivery rates |
-| Stockout Risk | furniture_decor and garden_tools are Critical risk |
-| Monthly Trend | Late % peaks in late 2017, improves through 2018 |
-| KPI Tiles | R$ 1.37M revenue at risk from delayed orders |
+| Sheet | Data Source | Insight |
+|---|---|---|
+| KPI Scorecards | kpi_summary | Total orders, late rate, avg delay, revenue at risk |
+| Brazil State Map | state_summary | Late delivery rate choropleth by customer state |
+| Monthly Trend | monthly_trend | Order volume vs late rate over 3 years (dual axis) |
+| Demand Concentration | category_risk | Top categories by demand concentration risk |
+| Route Risk | route_risk | Highest risk seller-to-customer state routes |
+| SLA Breakdown | sla_summary | Order distribution across 5 delivery severity tiers |
+| Seller Scorecard | seller_scorecard | Reliability tier breakdown with revenue at risk |
 
 ---
 
-## 🚀 How to Run
+## Key Business Insights
 
-1. Clone the repo:
+- Seller historical late rate and route late rate are the strongest predictors of delivery delay, outweighing product weight, dimensions, and payment value
+- The SP to RJ and SP to BA routes carry disproportionate revenue at risk relative to their order volumes
+- Furniture and garden tools categories show the highest demand concentration risk, with high order volumes supported by very few sellers
+- Late delivery rates improved significantly from 2017 to 2018, suggesting operational improvements over time
+- One seller accounts for R$18,000 in revenue at risk and was flagged as High Risk, making them a clear candidate for account review
+
+---
+
+## How to Reproduce
+
+1. Clone the repository:
+
 ```bash
 git clone https://github.com/AvinashGhai/Olist-Supply-chain-Analytics.git
 cd Olist-Supply-chain-Analytics
 ```
 
 2. Install dependencies:
+
 ```bash
-pip install pandas numpy pandas-gbq google-cloud-bigquery scikit-learn xgboost matplotlib seaborn db-dtypes
+pip install -r requirements.txt
 ```
 
-3. Download the dataset from [Kaggle — Brazilian E-Commerce](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) and place CSVs in `/data`
+3. Download the Olist Brazilian E-Commerce dataset from Kaggle and place all CSV files in the data/ directory:
+https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce
 
 4. Set up Google BigQuery:
    - Create a GCP project
-   - Enable BigQuery API
-   - Download service account JSON key → save as `bq_key.json` in project root
+   - Enable the BigQuery API
+   - Create a service account with BigQuery Admin role
+   - Download the JSON key and save it as bq_key.json in the project root
 
-
----
-
-## 📌 Business Insights
-
-- **São Paulo** handles the most orders but also carries the highest absolute revenue at risk
-- **Shipping duration** is the strongest predictor of delivery delay — outweighs product and location features
-- **furniture_decor** is the highest stockout risk category — high order volume with very few sellers
-- Late delivery rate **improved significantly** from 2017 to 2018 suggesting operational improvements over time
+5. Run notebooks in order:
+   - 01_data_ingestion.ipynb
+   - 02_sql_analysis.ipynb
+   - 03_ml_models.ipynb
+   - 04_risk_intelligence.ipynb
+   - 05_dashboard_prep.ipynb
 
 ---
 
-## 👤 Author
+## Requirements
 
-**Avinash Ghai**
-[GitHub](https://github.com/AvinashGhai) | [Tableau Public](https://public.tableau.com/app/profile/avinash.ghai)
+```
+pandas
+numpy
+pandas-gbq
+google-cloud-bigquery
+google-auth
+scikit-learn
+xgboost
+matplotlib
+seaborn
+db-dtypes
+```
+
+---
+
+## Author
+
+Avinash Ghai
+
+GitHub: https://github.com/AvinashGhai
+
