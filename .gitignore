@@ -9,3 +9,4 @@ __pycache__/
 data/olist_geolocation_dataset.csv
 data/olist_*.csv
 data/product_category_name_translation.csv
+.DS_Store
