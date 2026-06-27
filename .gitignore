@@ -7,3 +7,5 @@ __pycache__/
 .ipynb_checkpoints/
 *.pyc
 data/olist_geolocation_dataset.csv
+data/olist_*.csv
+data/product_category_name_translation.csv

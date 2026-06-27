@@ -1,0 +1,5 @@
+payment_type,total_orders,avg_order_value,late_pct,avg_delay_days
+credit_card,73213,182.5,6.49,-12.24
+boleto,19191,176.33,7.11,-11.29
+voucher,2582,132.49,6.12,-11.87
+debit_card,1483,149.2,5.63,-11.46
